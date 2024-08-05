@@ -1,0 +1,219 @@
+<SceneDefinition>
+	<!-- Two Quads -->
+	<Scene name="TwoQuads" numOfMeshes="3">
+		<MeshInfo type="Quad" center="0,1.5,0" orientation="0,-90.f,0" dimension="2,2,0" color="255,90,125,127">
+			<TextureInfo texture="Data/Textures/TintedGlass.png" debugTextureName="TintedGlass"/>
+		</MeshInfo>
+		<MeshInfo type="Quad" center="1,1.5,0" orientation="0,-90.f,0" dimension="2,2,0" color="70,140,250,191">
+			<TextureInfo texture="Data/Textures/Mosaic.png" debugTextureName="Mosaic"/>
+		</MeshInfo>
+
+		<MeshInfo type="Quad" center="1,-1.5,0" orientation="0,-90.f,0" dimension="2,2,0" color="70,140,250,191">
+			<TextureInfo texture="Data/Textures/Mosaic.png" debugTextureName="Mosaic"/>
+		</MeshInfo>
+		<MeshInfo type="Quad" center="0,-1.5,0" orientation="0,-90.f,0" dimension="2,2,0" color="255,90,125,127">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		
+		<!-- Opaque -->
+		<MeshInfo type="Quad" center="0,0,-2" orientation="0,0,0" dimension="10,10,0" color="0,255,0,255">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="BrownFloor"/>
+		</MeshInfo>
+	</Scene>
+	
+	
+	<!-- Multiple Quads -->
+	<Scene name="MultipleQuads" numOfMeshes="5">
+
+		<MeshInfo type="Sphere" center="0,0,0" orientation="0.f,90.f,0.f" dimension="8,0,0" color="255,0,0,127">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="Brown_Floor"/>
+		</MeshInfo>
+
+		<MeshInfo type="FridgeDoor" center="0.0f,0.0f,0.0f" orientation="-135.f,0.f,0.f" dimension="0.0625f,0.f,0.f" color="255,87,154,127">
+			<TextureInfo texture="Data/Textures/FridgeDoor.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="FridgeBody" center="0,0,0.1" orientation="-135.f,0,0" dimension="0.0625,0,0" color="0,255,0,127">
+			<TextureInfo texture="Data/Textures/FridgeBody.png" debugTextureName="FridgeBodyTexture"/>
+		</MeshInfo>
+		
+	</Scene>
+	
+	
+	<!-- Bunnies -->
+	<Scene name="Bunnies" numOfMeshes="4">
+		<MeshInfo type="Bunny" center="0.0f,0.0f,-0.165f" orientation="90.f,0.f,0.f" dimension="10.f,0.f,0.f" color="255,0,0,127"/>
+		<MeshInfo type="Bunny" center="0.5f,0.0f,-0.165f" orientation="90.f,0.f,0.f" dimension="10.f,0.f,0.f" color="0,0,255,127"/>
+		<MeshInfo type="Bunny" center="1.0f,0.0f,-0.165f" orientation="90.f,0.f,0.f" dimension="10.f,0.f,0.f" color="0,255,0,127"/>
+		
+		
+		<!-- Opaque -->
+		<MeshInfo type="Quad" center="0,0,0" orientation="0,0,0." dimension="10,10,0" color="127,127,127,255">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="BrownFloorTexture"/>
+		</MeshInfo>
+	</Scene>
+
+	
+	<!-- Teapots -->
+	<Scene name="Teapots" numOfMeshes="4">
+		<MeshInfo type="Teapot" center="0.0f,0.0f,0.0f" orientation="90.f,0.f,0.f" dimension="0.5f,0.f,0.f" color="12,255,57,127"/>
+		<MeshInfo type="Quad" center="0,0,0" orientation="0,0,0" dimension="10,10,0" color="0,0,255,254">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+	</Scene>
+
+	
+	<!-- Fridge -->
+	<Scene name="Fridge" numOfMeshes="3">
+		<MeshInfo type="FridgeDoor" center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0625f,0.f,0.f" color="255,87,154,127">
+			<TextureInfo texture="Data/Textures/FridgeDoor.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="FridgeBody" center="0,0,0.1" orientation="0,0,0" dimension="0.0625,0,0" color="0,255,0,127">
+			<TextureInfo texture="Data/Textures/FridgeBody.png" debugTextureName="FridgeBodyTexture"/>
+		</MeshInfo>
+
+		<MeshInfo type="Quad" center="0,0,0" orientation="0,0,0" dimension="20,20,0" color="0,255,0,255">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="Brown_Floor"/>
+		</MeshInfo>
+	</Scene>
+
+	
+	<!-- Car -->
+	<Scene name="Car" numOfMeshes="4">
+		
+		<!-- Translucent -->
+		<MeshInfo type="CarBody"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="255,0,0,254">
+			<TextureInfo texture="Data/Textures/CarBodyBaseColor.png" debugTextureName="CarBodyBaseColorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="CarGlass1"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="0,255,0,254">
+			<TextureInfo texture="Data/Textures/CarGlass1.png" debugTextureName="CarGlass1"/>
+		</MeshInfo>
+		<MeshInfo type="CarGlass2"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="0,0,255,254">
+			<TextureInfo texture="Data/Textures/CarGlass2.png" debugTextureName="CarGlass2"/>
+		</MeshInfo>
+		
+		<!-- Opaque -->
+		<MeshInfo type="Quad" center="0,0,0" orientation="0,0,0" dimension="10,10,0" color="0,255,0,255">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="BrownFloorTexture"/>
+		</MeshInfo>
+	</Scene>
+	
+	
+	<!-- IntersectingMeshes -->
+	<Scene name="IntersectingMeshes" numOfMeshes="3">
+		<MeshInfo type="Quad" center="0.0f,0.0f,0.0f" orientation="45.f,-90.f,0.f" dimension="2.f,2.f,0.f" color="255,90,125,127">
+			<TextureInfo texture="Data/Textures/TintedGlass.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="Quad" center="0.0f,0.0f,0.0f" orientation="-45.f,-90.f,0.f" dimension="2.f,2.f,0.f" color="70,140,250,191">
+			<TextureInfo texture="Data/Textures/Mosaic.png" debugTextureName="FridgeBodyTexture"/>
+		</MeshInfo>
+		<MeshInfo type="Sphere" center="10.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="5.f,0.f,0.f" color="255,87,154,175">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="BrownFloor"/>
+		</MeshInfo>
+		<MeshInfo type="OBB" center="12.5f,0.0f,1.0f" orientation="45.f,45.f,0.f" dimension="5.f,2.f,3.f" color="10,87,154,100">
+			<TextureInfo texture="Data/Textures/Mosaic.png" debugTextureName="Mosaic"/>
+		</MeshInfo>
+		<MeshInfo type="Quad" center="0,0,-1" orientation="0,0,0" dimension="10,10,0" color="0,255,0,255">
+			<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+	</Scene>
+
+
+	<!-- Fog -->
+	<Scene name="Fog" numOfMeshes="13">
+		<MeshInfo type="BillboardedQuad" center="0.0f,0.0f,0.0f" orientation="45.f,-90.f,0.f" dimension="7.f,5.f,0.f" color="127,200,57,80">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="2.0f,-1.0f,0.0f" orientation="45.f,-90.f,0.f" dimension="10.f,10.f,0.f" color="127,200,57,10">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="4.5.0f,0.5.0f,1.0f" orientation="45.f,-90.f,0.f" dimension="7.f,7.f,0.f" color="127,200,57,20">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-1.0f,2.0f,-0.5f" orientation="45.f,-90.f,0.f" dimension="5.f,5.f,0.f" color="127,200,57,24">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-4.5.0f,1.5.0f,0.25f" orientation="45.f,-90.f,0.f" dimension="15.f,8.f,0.f" color="127,200,57,25">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-0.5f,-0.5f,-0.25f" orientation="45.f,-90.f,0.f" dimension="12.f,8.f,0.f" color="127,200,57,25">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="7.25f,-0.25f,0.25f" orientation="45.f,-90.f,0.f" dimension="13.f,7.f,0.f" color="127,200,57,25">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-5.0f,-1.5.0f,0.0f" orientation="45.f,-90.f,0.f" dimension="12.f,5.f,0.f" color="127,200,57,25">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="9.0f,1.0f,0.2f" orientation="45.f,-90.f,0.f" dimension="15.f,3.f,0.f" color="127,200,57,25">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-8.0f,-0.4f,-0.3f" orientation="45.f,-90.f,0.f" dimension="9.f,4.f,0.f" color="127,200,57,12">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+
+
+		<MeshInfo type="BillboardedQuad" center="0.0f,1.0f,1.0f" orientation="45.f,-90.f,0.f" dimension="27.f,25.f,0.f" color="255,200,57,20">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="2.0f,-2.0f,1.0f" orientation="45.f,-90.f,0.f" dimension="20.f,20.f,0.f" color="0,200,57,27">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="4.5.0f,1.5.0f,2.0f" orientation="45.f,-90.f,0.f" dimension="27.f,17.f,0.f" color="127,20,57,20">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-1.0f,-1.0f,3.5f" orientation="45.f,-90.f,0.f" dimension="15.f,20.f,0.f" color="127,200,200,27">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-4.5.0f,2.5.0f,3.25f" orientation="45.f,-90.f,0.f" dimension="25.f,20.f,0.f" color="127,20,127,54">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-0.5f,-3.5f,3.25f" orientation="45.f,-90.f,0.f" dimension="22.f,25.f,0.f" color="27,20,157,54">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="7.25f,-4.25f,2.25f" orientation="45.f,-90.f,0.f" dimension="23.f,23.f,0.f" color="240,20,80,54">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-5.0f,-5.5.0f,2.7f" orientation="45.f,-90.f,0.f" dimension="22.f,25.f,0.f" color="240,200,0,54">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="9.0f,5.0f,5.2f" orientation="45.f,-90.f,0.f" dimension="25.f,23.f,0.f" color="7,200,25,24">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+		<MeshInfo type="BillboardedQuad" center="-8.0f,-2.4f,2.3f" orientation="45.f,-90.f,0.f" dimension="29.f,24.f,0.f" color="200,200,157,17">
+			<TextureInfo texture="Data/Textures/TransparentFog.png" debugTextureName="TransparentFog"/>
+		</MeshInfo>
+
+		<MeshInfo type="CarBody"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="255,0,0,254">
+			<TextureInfo texture="Data/Textures/CarBodyBaseColor.png" debugTextureName="CarBodyBaseColorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="CarGlass1"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="0,255,0,254">
+			<TextureInfo texture="Data/Textures/CarGlass1.png" debugTextureName="CarGlass1"/>
+		</MeshInfo>
+		<MeshInfo type="CarGlass2"	center="0.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.0125f,0.f,0.f" color="0,0,255,254">
+			<TextureInfo texture="Data/Textures/CarGlass2.png" debugTextureName="CarGlass2"/>
+		</MeshInfo>
+
+
+
+
+
+
+		<MeshInfo type="FridgeDoor" center="4.0f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.025f,0.f,-1.f" color="150,200,57,63">
+			<TextureInfo texture="Data/Textures/FridgeDoor.png" debugTextureName="FridgeDoorTexture"/>
+		</MeshInfo>
+		<MeshInfo type="FridgeBody" center="4.f,0.0f,0.0f" orientation="0.f,0.f,0.f" dimension="0.025f,0.f,-1.f" color="150,45,255,127">
+			<TextureInfo texture="Data/Textures/FridgeBody.png" debugTextureName="FridgeBodyTexture"/>
+		</MeshInfo>
+
+
+
+		<!-- Opaque -->
+		<!--
+			<MeshInfo type="OBB" center="2.5f,0.0f,1.0f" orientation="45.f,45.f,0.f" dimension="5.f,2.f,3.f" color="10,87,154,255">
+				<TextureInfo texture="Data/Textures/Brown_Floor.png" debugTextureName="BrownFloor"/>
+			</MeshInfo>
+		-->
+		
+	</Scene>
+	
+</SceneDefinition>
