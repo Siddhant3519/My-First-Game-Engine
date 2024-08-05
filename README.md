@@ -7,9 +7,13 @@ This repository features my first-ever C++ game engine built from scratch and an
 ### **1. Personal C++ Game Engine**  
 
 **Project I'm most proud of:**
+
 This is my first C++ game engine, developed to explore and understand the of engine development. Creating this engine has truly been a learning experience, showcasing my growth and evolving coding style. Although I've moved onto developing a new engine based on DirectX 12, this project holds a special place in heart and showcases my passion for game development.
+
 **Note: This is engine serves as a personal learning tool, tailored to my needs and preferences.** 
+
 This game engine contains the following systems:  
+
 - Multithreaded job system
 - Event system
 - Input system (mouse, keyboard, Xbox controller)
@@ -21,6 +25,7 @@ This game engine contains the following systems:
 - TCP networking system
 
 Custom Math and Physics library contains:
+
 - Raycasts for AABBs, OBBs, capsules, cylinders, discs, spheres, lines, planes, and convex hulls
 - General math utilities for dot product, cross product, projected lengths, easing functions, splines, interpolation, etc.
 
