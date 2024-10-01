@@ -2,6 +2,8 @@
 This repository features my first-ever C++ game engine built from scratch and an OIT Playground made using this game engine, showcasing my journey into game development.
 
 
+**Note: The following projects have poor documentation of code, and doesn't reflect my ability to write clean documented code**
+
 
 ## **<ins>Projects</ins>**  
 ### **1. Personal C++ Game Engine**  
@@ -34,3 +36,9 @@ Custom Math and Physics library contains:
 ### **2. OIT Playground**
 
 This project explores Order Independent Transparency (OIT) rendering techniques. It includes various demos and experiments that have helped me deepen my understanding of translucency rendering and GPU performance.  
+
+
+
+### **3. Dynamic Environment**
+
+This project explores various techniques for simulating dynamic environments using procedural generation and advanced rendering techniques. It features, a procedurally generated terrain developed entirely in shaders, a simulated grass rendering mode that integrates seamlessly with the terrain, enhancing the overall visual fidelity, and a test bed designed to explore and validate various assumptions regarding raymarching and signed distance fields (SDFs).
