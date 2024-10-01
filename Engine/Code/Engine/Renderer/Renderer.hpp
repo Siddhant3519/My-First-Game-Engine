@@ -294,6 +294,7 @@ enum class UAVResourceFlag : unsigned char
 //--------------------------------------------------------------------------------------------------
 enum class InputLayout : unsigned char
 {
+	VERTEX_NONE,
 	VERTEX_PCU,
 	VERTEX_PCUTBN,
 };
@@ -306,6 +307,7 @@ enum class ResourceType : unsigned char
 	TEXTURE1D,
 	TEXTURE2D,
 	TEXTURE3D,
+	TEXTURE2D_CUBEMAP,
 	STRUCTURED_BUFFER,
 	RAW_BUFFER,
 };
@@ -332,7 +334,7 @@ struct TextureConfig
 	unsigned int			m_numOfSlices					=	1;
 	unsigned int			m_multiSampleCount				=	1;
 	unsigned int			m_multiSampleQuality			=	0;
-	unsigned int			m_sizeOfTexelInBytes					=	0;
+	unsigned int			m_sizeOfTexelInBytes			=	0;
 	unsigned int			m_debugNameSize					=	0;
 	char const*				m_debugName						=	"None";
 	void*					m_defaultInitializationData		=	nullptr;
@@ -400,24 +402,25 @@ public:
 	void		BindTexture(Texture const* texture, BindingLocation bindingLocation = BindingLocation::PIXEL_SHADER);
 	Texture*	CreateOrGetTextureFromFile(char const* imageFilePath);
 	BitmapFont*	CreateOrGetBitmapFont(char const* bitmapFontFilePathWithNoExtension);
-	Shader*		CreateOrGetShader(char const* shaderFilePath, InputLayout const& inputLayout = InputLayout::VERTEX_PCU);
+	Shader*		CreateOrGetShader(char const* shaderFilePath, InputLayout const& inputLayout = InputLayout::VERTEX_PCU, bool isUsedForInstancedRendering = false);
 
 	Texture*	GetTextureForFileName	(char const* imageFilePath);
 	BitmapFont* GetBitmapFontForFileName(char const* bitmapFontFilePathWithNoExtension);
 
 	void	BindShader(Shader* shader, BindingLocation bindingLocation = BindingLocation::PIXEL_SHADER);
 	void	UnbindShaders();
-	Shader* CreateShader(char const* shaderName, char const* shaderSource, InputLayout const& inputLayout = InputLayout::VERTEX_PCU);
-	Shader* CreateShader(char const* shaderName, InputLayout const& inputLayout = InputLayout::VERTEX_PCU);
+	Shader* CreateShader(char const* shaderName, char const* shaderSource, InputLayout const& inputLayout = InputLayout::VERTEX_PCU, bool isUsedForInstancedRendering = false);
+	Shader* CreateShader(char const* shaderName, InputLayout const& inputLayout = InputLayout::VERTEX_PCU, bool isUsedForInstancedRendering = false);
 	Shader* CreateComputeShader(char const* shaderName);
 	bool	CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target);
 
 	VertexBuffer*	CreateVertexBuffer(size_t const size);
 	VertexBuffer*	CreateVertexBuffer(size_t const size, unsigned int stride);
 	VertexBuffer*	CreateVertexBuffer(size_t const size, unsigned int stride, ResourceUsage bufferUsage, void* defaultInitializationData = nullptr, bool isStreamOut = false); // ResourceBindFlag bindFlag = ResourceBindFlag::VERTEX_BUFFER
-	void			CreateVertexBuffer(D3D11_Buffer* out_buffer, unsigned int numOfElements, unsigned int elementSize, ResourceUsage const& bufferUsage, void* defaultDataToBePopulated = nullptr, bool isStreamOut = false);
+	void			CreateVertexBuffer(D3D11_Buffer*& out_buffer, unsigned int numOfElements, unsigned int elementSize, ResourceUsage const& bufferUsage, void* defaultDataToBePopulated = nullptr, bool isStreamOut = false);
 	IndexBuffer*	CreateIndexBuffer(size_t const size);
 	IndexBuffer*	CreateIndexBuffer(size_t const size, ResourceUsage bufferUsage, void* defaultInitializationData = nullptr); // ResourceBindFlag bindFlag = ResourceBindFlag::VERTEX_BUFFER
+	void			CreateIndexBuffer(D3D11_Buffer*& out_indexBuffer, size_t const numOfElements, ResourceUsage bufferUsage, void* defaultInitializationData = nullptr);
 	void			CreateStructuredBuffer(D3D11_Buffer*& out_buffer, unsigned int numOfElements, unsigned int elementSize, ResourceUsage const& bufferUsage, void* defaultDataToBePopulated = nullptr, bool isStandard = false, 
 										   ResourceViewFormat const resourceViewFormat = ResourceViewFormat::DXGI_FORMAT_R32G32B32_FLOAT, UAVResourceFlag const uavResourceFlag = UAVResourceFlag::COUNTER);
 	void			CreateAppendConsumeBuffer(D3D11_Buffer*& out_buffer, unsigned int numOfElements, unsigned int elementSize, void* defaultDataToBePopulated = nullptr);
@@ -429,6 +432,8 @@ public:
 	void BindVertexBuffer(VertexBuffer* vbo, PrimitiveTopology primitiveTopology = PrimitiveTopology::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// void BindVertexBuffers(VertexBuffer** arrayOfVertexBuffers, unsigned int* arrayOfStrides = nullptr, unsigned int* arrayOfOffsets = nullptr, unsigned int numOfVertexBuffersToBind = 1, unsigned int startOffset = 0);
 	void BindIndexBuffer(IndexBuffer* ibo);
+	void BindIndexBuffer(D3D11_Buffer* ibo);
+	void BindInstanceBuffer(D3D11_Buffer* instanceBuffer, D3D11_Buffer* vertexBuffer, PrimitiveTopology primitiveTopology = PrimitiveTopology::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	ConstantBuffer* CreateConstantBuffer(size_t const size);
 	ConstantBuffer* CreateConstantBuffer(size_t const& size, ResourceUsage bufferUsage, void* defaultInitializationData = nullptr);
@@ -440,6 +445,8 @@ public:
 	void DrawVertexAndIndexBuffer(VertexBuffer* vbo, IndexBuffer* ibo, int indexCount, int indexOffset = 0, int vertexOffset = 0);
 	void DrawIndexedBuffer(IndexBuffer* ibo, VertexBuffer* vbo, unsigned int indexCount, unsigned int indexOffset = 0, int vertexOffset = 0);
 	void DrawIndexed(int indexCount, int indexOffset = 0, int vertexOffset = 0);
+	void DrawIndexedInstanced(D3D11_Buffer* indexBuffer, D3D11_Buffer* instanceBuffer, D3D11_Buffer* vertexBuffer, unsigned int indexCountPerInstance, 
+							  unsigned int instanceCount, unsigned int startIndexLocation = 0, unsigned int baseVertexLocation = 0, unsigned int startInstanceLocation = 0);
 
 	void ComputeShaderDispatch(unsigned int threadGroupX, unsigned int threadGroupY, unsigned int threadGroupZ);
 
@@ -471,8 +478,9 @@ public:
 	void			CreateReadOnlyDepthStencilView(Texture*& texture)						const;
 	void			CreateWritableTextureAndView(Texture*& textureContainingUAV);
 	void			CreateTextureFromConfig(TextureConfig const& config, Texture*& texture);
-	void			CreateResourceFromConfig(D3D11_ResourceConfig const& config, D3D11_Resource*& resource);
+	void			CreateResourceFromConfig(D3D11_ResourceConfig& config, D3D11_Resource*& resource);
 	D3D11_Resource* CreateTextureResourceFromFile(char const* imageFilePath, char const* debugResourceName = nullptr, unsigned int debugResourceNameSize = 0);
+	D3D11_Resource* CreateTextureCubeResourceFromFile(char const* cubeMapDir, char const* debugResourceName = nullptr, unsigned int debugResourceNameSize = 0);
 	void			CreateDepthResource(D3D11_Resource*& depthResource, char const* debugResourceName = "None", unsigned int debugResourceNameSize = 0, bool canBeReadOnly = false, IntVec2 const& textureDims = IntVec2(-1, -1));
 	void			CreateRenderTargetResource(D3D11_Resource*& renderTargetResource, bool isWritable, char const* debugResourceName = nullptr, unsigned int debugResourceNameSize = 0, IntVec2 const& textureDims = IntVec2(-1, -1));
 

@@ -552,7 +552,7 @@ BitmapFont* Renderer::CreateOrGetBitmapFont(char const* bitmapFontFilePathWithNo
 
 
 //--------------------------------------------------------------------------------------------------
-Shader* Renderer::CreateOrGetShader(char const* shaderFilePath, InputLayout const& inputLayout)
+Shader* Renderer::CreateOrGetShader(char const* shaderFilePath, InputLayout const& inputLayout, bool isUsedForInstancedRendering /*= false*/)
 {
 	for (int shaderIndex = 0; shaderIndex < m_loadedShaders.size(); ++shaderIndex)
 	{
@@ -562,7 +562,7 @@ Shader* Renderer::CreateOrGetShader(char const* shaderFilePath, InputLayout cons
 		}
 	}
 
-	Shader* newShader = CreateShader(shaderFilePath, inputLayout);
+	Shader* newShader = CreateShader(shaderFilePath, inputLayout, isUsedForInstancedRendering);
 	return newShader;
 }
 
@@ -633,7 +633,7 @@ void Renderer::UnbindShaders()
 
 
 //--------------------------------------------------------------------------------------------------
-Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource, InputLayout const& inputLayout)
+Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource, InputLayout const& inputLayout /*= inputLayout::VERTEX_PCU*/, bool isUsedForInstancedRendering /*= false*/)
 {
 	HRESULT hResult;
 	ShaderConfig shaderConfig;
@@ -662,43 +662,79 @@ Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource,
 		}
 	}
 
-	if (inputLayout == InputLayout::VERTEX_PCUTBN)
+	if (!isUsedForInstancedRendering)
 	{
-		// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
-		D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+		if (inputLayout == InputLayout::VERTEX_PCUTBN)
 		{
-			{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,							 D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TANGENT",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BINORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		}; // organizing the data in a way so that the GPU can understand how our Vertices are laid out in memory
-		hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 6, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
-	}
-	else if (inputLayout == InputLayout::VERTEX_PCU)
-	{
-		// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
-		D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
+			D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			{
+				{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,							 D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"TANGENT",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"BINORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			}; // organizing the data in a way so that the GPU can understand how our Vertices are laid out in memory
+			hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 6, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+		}
+		else if (inputLayout == InputLayout::VERTEX_PCU)
 		{
-			{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,	0, 0,							 D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		}; // organizing the data in a way so that the GPU can understand how our Vertices are laid out in memory
-		hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 3, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+			// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
+			D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			{
+				{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,	0, 0,							 D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			}; // organizing the data in a way so that the GPU can understand how our Vertices are laid out in memory
+			hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 3, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+		}
+		else
+		{
+			ERROR_AND_DIE("Do not Support the specified Input Layout");
+		}
 	}
 	else
 	{
-		ERROR_AND_DIE("Do not Support the specified Input Layout");
+		if (inputLayout == InputLayout::VERTEX_NONE)
+		{
+			D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			{
+				{"INSTANCE_POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,								D3D11_INPUT_PER_INSTANCE_DATA,	1},
+			}; 
+			hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 1, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+		}
+		else if (inputLayout == InputLayout::VERTEX_PCU)
+		{
+			// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
+			D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			{
+				{"POSITION",			0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,								D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"COLOR",				0, DXGI_FORMAT_R8G8B8A8_UNORM,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"TEXCOORD",			0, DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"INSTANCE_POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		1,	0,								D3D11_INPUT_PER_INSTANCE_DATA,	1}
+			};
+			hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 4, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+		}
+		else if (inputLayout == InputLayout::VERTEX_PCUTBN)
+		{
+			D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+			{
+				{"POSITION",			0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,								D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"COLOR",				0, DXGI_FORMAT_R8G8B8A8_UNORM,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"TEXCOORD",			0, DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"TANGENT",				0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"BINORMAL",			0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"NORMAL",				0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0},
+				{"INSTANCE_POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		1,	0,								D3D11_INPUT_PER_INSTANCE_DATA,	1}
+			}; 
+			hResult = m_d3d11Device->CreateInputLayout(inputElementDesc, 7, vertexShaderByteCode.data(), vertexShaderByteCode.size(), &shader->m_inputLayout);
+		}
+		else
+		{
+			ERROR_AND_DIE("Invalid Input Layout provided");
+		}
 	}
-	// Input element is a property of a vertex, to give a vertex multiple properties we make an array of vertices like in our case with a array of PCUs
-	// D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
-	// {
-	// 	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	// 	{"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	// 	{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	// }; // organizing the data in a way so that the GPU can understand how our Vertices are laid out in memory
-
 
 	if (!SUCCEEDED(hResult))
 	{
@@ -712,7 +748,7 @@ Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource,
 
 
 //--------------------------------------------------------------------------------------------------
-Shader* Renderer::CreateShader(char const* shaderName, InputLayout const& inputLayout)
+Shader* Renderer::CreateShader(char const* shaderName, InputLayout const& inputLayout /*= inputLayout::VERTEX_PCU*/, bool isUsedForInstancedRendering /*= false*/)
 {
 	std::string shaderFilePath = shaderName + std::string(".hlsl");
 	std::string outShaderContents;
@@ -721,7 +757,7 @@ Shader* Renderer::CreateShader(char const* shaderName, InputLayout const& inputL
 	{
 		ERROR_AND_DIE("Failed to read the shader file: " + shaderFilePath);
 	}
-	Shader* shader = CreateShader(shaderName, outShaderContents.c_str(), inputLayout);
+	Shader* shader = CreateShader(shaderName, outShaderContents.c_str(), inputLayout, isUsedForInstancedRendering);
 	return shader;
 }
 
@@ -902,7 +938,7 @@ VertexBuffer* Renderer::CreateVertexBuffer(size_t const size, unsigned int strid
 
 
 //--------------------------------------------------------------------------------------------------
-void Renderer::CreateVertexBuffer(D3D11_Buffer* out_buffer, unsigned int numOfElements, unsigned int elementSize, ResourceUsage const& bufferUsage, void* defaultDataToBePopulated, bool isStreamOut)
+void Renderer::CreateVertexBuffer(D3D11_Buffer*& out_buffer, unsigned int numOfElements, unsigned int elementSize, ResourceUsage const& bufferUsage, void* defaultDataToBePopulated, bool isStreamOut)
 {
 	unsigned int vertexBufferSizeInBytes = numOfElements * elementSize;
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -947,8 +983,16 @@ void Renderer::CreateVertexBuffer(D3D11_Buffer* out_buffer, unsigned int numOfEl
 	D3D11_SUBRESOURCE_DATA initializationData = { };
 	initializationData.pSysMem = defaultDataToBePopulated;
 
-	out_buffer = new D3D11_Buffer(numOfElements, elementSize);
-	HRESULT hResult = m_d3d11Device->CreateBuffer(&vertexBufferDesc, &initializationData, &out_buffer->m_buffer);
+	out_buffer			=	new D3D11_Buffer(numOfElements, elementSize);
+	HRESULT hResult;
+	if (defaultDataToBePopulated == nullptr)
+	{
+		hResult		=	m_d3d11Device->CreateBuffer(&vertexBufferDesc, nullptr, &out_buffer->m_buffer);
+	}
+	else
+	{
+		hResult		=	m_d3d11Device->CreateBuffer(&vertexBufferDesc, &initializationData, &out_buffer->m_buffer);
+	}
 	GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create a vertex buffer");
 }
 
@@ -1024,6 +1068,56 @@ IndexBuffer* Renderer::CreateIndexBuffer(size_t const size, ResourceUsage buffer
 	GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create an index buffer");
 
 	return indexBuffer;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void Renderer::CreateIndexBuffer(D3D11_Buffer*& out_indexBuffer, size_t const numOfElements, ResourceUsage bufferUsage, void* defaultInitializationData /*= nullptr*/)
+{
+	size_t indexBufferSizeInBytes = numOfElements * sizeof(unsigned int);
+
+	D3D11_BUFFER_DESC indexBufferDesc = { };
+	
+	indexBufferDesc.ByteWidth		=	(unsigned int)indexBufferSizeInBytes;
+	indexBufferDesc.BindFlags		=	D3D11_BIND_INDEX_BUFFER;
+	
+	switch (bufferUsage)
+	{
+	case ResourceUsage::GPU_READ:
+	{
+		indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		break;
+	}
+	case ResourceUsage::GPU_READ_GPU_WRITE:
+	{
+		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		break;
+	}
+	case ResourceUsage::GPU_READ_CPU_WRITE:
+	{
+		indexBufferDesc.Usage			=	D3D11_USAGE_DYNAMIC;
+		indexBufferDesc.CPUAccessFlags	=	D3D11_CPU_ACCESS_WRITE;
+		break;
+	}
+	case ResourceUsage::GPU_READ_CPU_READ_GPU_WRITE_CPU_WRITE:
+	{
+		indexBufferDesc.Usage			=	D3D11_USAGE_STAGING;
+		indexBufferDesc.CPUAccessFlags	=	D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+		break;
+	}
+	default:
+	{
+		ERROR_AND_DIE("Please provide a valid buffer usage when creating the vertex buffer");
+		break;
+	}
+	}
+
+	D3D11_SUBRESOURCE_DATA initializationData;
+	initializationData.pSysMem = defaultInitializationData;
+
+	out_indexBuffer				=	new D3D11_Buffer((uint32_t)numOfElements, sizeof(uint32_t));
+	HRESULT hResult				=	m_d3d11Device->CreateBuffer(&indexBufferDesc, &initializationData, &out_indexBuffer->m_buffer);
+	GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create an index buffer");
 }
 
 
@@ -1421,6 +1515,36 @@ void Renderer::BindIndexBuffer(IndexBuffer* ibo)
 
 
 //--------------------------------------------------------------------------------------------------
+void Renderer::BindIndexBuffer(D3D11_Buffer* ibo)
+{
+	m_d3d11DeviceContext->IASetIndexBuffer(ibo->m_buffer, DXGI_FORMAT_R32_UINT, 0);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void Renderer::BindInstanceBuffer(D3D11_Buffer* instanceBuffer, D3D11_Buffer* vertexBuffer, PrimitiveTopology primitiveTopology /*= PrimitiveTopology::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST*/)
+{
+	if (!vertexBuffer)
+	{
+		unsigned int vertexStride		=	instanceBuffer->GetElementSize();
+		unsigned int offset				=	0;
+
+		m_d3d11DeviceContext->IASetVertexBuffers(0, 1, &instanceBuffer->m_buffer, &vertexStride, &offset);
+		m_d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY(primitiveTopology));
+		return;
+	}
+
+
+	ID3D11Buffer* vertexBuffers[]	=	{ vertexBuffer->m_buffer, instanceBuffer->m_buffer };
+	unsigned int vertexStrides[]	=	{ vertexBuffer->GetElementSize(), instanceBuffer->GetElementSize() };
+	unsigned int offsets[]			=	{ 0, 0 };
+
+	m_d3d11DeviceContext->IASetVertexBuffers(0, 2, vertexBuffers, vertexStrides, offsets);
+	m_d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY(primitiveTopology));
+}
+
+
+//--------------------------------------------------------------------------------------------------
 ConstantBuffer* Renderer::CreateConstantBuffer(size_t const size)
 {
 	D3D11_BUFFER_DESC constantBufferDesc = {};
@@ -1539,6 +1663,16 @@ void Renderer::DrawIndexedBuffer(IndexBuffer* ibo, VertexBuffer* vbo, unsigned i
 void Renderer::DrawIndexed(int indexCount, int indexOffset, int vertexOffset)
 {
 	m_d3d11DeviceContext->DrawIndexed(indexCount, indexOffset, vertexOffset);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void Renderer::DrawIndexedInstanced(D3D11_Buffer* indexBuffer, D3D11_Buffer* instanceBuffer, D3D11_Buffer* vertexBuffer, unsigned int indexCountPerInstance, unsigned int instanceCount, unsigned int startIndexLocation /*= 0*/, unsigned int baseVertexLocation /*= 0*/, unsigned int startInstanceLocation /*= 0*/)
+{
+	SetStatesIfChanged();
+	BindInstanceBuffer(instanceBuffer, vertexBuffer);
+	BindIndexBuffer(indexBuffer);
+	m_d3d11DeviceContext->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
 
@@ -1869,6 +2003,7 @@ void Renderer::SetStatesIfChanged()
 	{
 		m_d3d11SamplerState = m_samplerStates[int(m_desiredSamplerMode)];
 		m_d3d11DeviceContext->PSSetSamplers(0, 1, &m_d3d11SamplerState);
+		m_d3d11DeviceContext->VSSetSamplers(0, 1, &m_d3d11SamplerState);
 	}
 
 	if (m_rasterizerStates[int(m_desiredRasterizedMode)] != m_d3d11RasterizeState)
@@ -2317,7 +2452,7 @@ void Renderer::CreateTextureFromConfig(TextureConfig const& config, Texture*& te
 
 
 //--------------------------------------------------------------------------------------------------
-void Renderer::CreateResourceFromConfig(D3D11_ResourceConfig const& config, D3D11_Resource*& out_resource)
+void Renderer::CreateResourceFromConfig(D3D11_ResourceConfig& config, D3D11_Resource*& out_resource)
 {
 	HRESULT hResult;
 	switch (config.m_type)
@@ -2404,6 +2539,95 @@ void Renderer::CreateResourceFromConfig(D3D11_ResourceConfig const& config, D3D1
 		case ResourceType::TEXTURE3D:
 		{
 		
+			break;
+		}
+
+		case ResourceType::TEXTURE2D_CUBEMAP:
+		{
+			IntVec2 const& textureDim = (config.m_width == (unsigned int)-1 || config.m_height == (unsigned int)-1) ? m_config.m_window->GetClientDimensions() : IntVec2(config.m_width, config.m_height);
+
+			// Populate cube map texture description
+			D3D11_TEXTURE2D_DESC textureDesc	= { };
+			textureDesc.Usage					=	(D3D11_USAGE)config.m_usageFlag;
+			textureDesc.Format					=	(DXGI_FORMAT)config.m_format;
+			textureDesc.BindFlags				=	(unsigned int)config.m_bindFlags;
+			textureDesc.Width					=	textureDim.x;
+			textureDesc.Height					=	textureDim.y;
+			textureDesc.MipLevels				=	config.m_mipLevels;
+			textureDesc.ArraySize				=	config.m_numOfSlices;
+			textureDesc.SampleDesc.Count		=	config.m_multiSampleCount;
+			textureDesc.SampleDesc.Quality		=	config.m_multiSampleQuality;
+			textureDesc.MiscFlags				=	D3D11_RESOURCE_MISC_TEXTURECUBE;
+			
+			// Initialize a cube map resource
+			out_resource						=	new D3D11_Resource();
+			out_resource->m_textureDims			=	IntVec3(textureDim.x, textureDim.y, 0);
+			out_resource->m_resourceType		=	config.m_type;
+
+			// Create desired cube map texture
+			D3D11_SUBRESOURCE_DATA cubeMapInitData[6];
+			D3D11_SUBRESOURCE_DATA* defaultInitializationData = (D3D11_SUBRESOURCE_DATA *)config.m_defaultInitializationData;
+			for (uint8_t textureIndex = 0; textureIndex < 6; ++textureIndex)
+			{
+				cubeMapInitData[textureIndex].pSysMem			=	defaultInitializationData[textureIndex].pSysMem;
+				cubeMapInitData[textureIndex].SysMemPitch		=	textureDim.x * 4;		// Pitch, width * bytesPerTexel
+				cubeMapInitData[textureIndex].SysMemSlicePitch	=	0;
+			}
+			// initializationData.pSysMem						=	config.m_defaultInitializationData;
+			// initializationData.SysMemPitch					=	textureDesc.Width * config.m_sizeOfTexelInBytes;
+			// D3D11_SUBRESOURCE_DATA* defaultPopulatedData	=	config.m_defaultInitializationData == nullptr ? nullptr : &cubeMapInitData;
+			hResult											=	m_d3d11Device->CreateTexture2D(&textureDesc, cubeMapInitData, &out_resource->m_texture2d);
+			GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create the desired Texture2D resource")
+
+			// Create required resource views
+			unsigned int const& bindFlag	=	(unsigned int)config.m_bindFlags;
+			// bool const& isMultiSampled		=	textureDesc.SampleDesc.Count > 1;
+			if (bindFlag & (unsigned int)ResourceBindFlag::SHADER_RESOURCE)
+			{
+				// Create SRV
+				D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc	=	{ };
+				shaderResourceViewDesc.Format							=	textureDesc.Format != DXGI_FORMAT_R32_TYPELESS ? textureDesc.Format : DXGI_FORMAT_R32_FLOAT;
+				shaderResourceViewDesc.ViewDimension					=	D3D11_SRV_DIMENSION_TEXTURECUBE; // add multi sampling support later
+				shaderResourceViewDesc.Texture2D.MipLevels				=	textureDesc.MipLevels;
+				hResult													=	m_d3d11Device->CreateShaderResourceView(out_resource->m_texture2d, &shaderResourceViewDesc, &out_resource->m_shaderResourceView);
+				GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create a shader resource view for the desired texture2D resource")
+			}
+
+			if (bindFlag & (unsigned int)ResourceBindFlag::UNORDERED_ACCESS)
+			{
+				ERROR_AND_DIE("UAV resource view for cube maps not implemented yet");
+				// D3D11_UNORDERED_ACCESS_VIEW_DESC unorderedAccessViewDesc	=	{ };
+				// unorderedAccessViewDesc.Format								=	textureDesc.Format;
+				// unorderedAccessViewDesc.ViewDimension						=	D3D11_UAV_DIMENSION_TEXTURE2D;
+				// hResult														=	m_d3d11Device->CreateUnorderedAccessView(out_resource->m_texture2d, &unorderedAccessViewDesc, &out_resource->m_unorderedAccessView);
+				// GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create an unordered access view for the desired texture2D resource")
+			}
+
+			if (bindFlag & (unsigned int)ResourceBindFlag::RENDER_TARGET)
+			{
+				ERROR_AND_DIE("Render target resource view for cube maps not implemented yet");
+				// D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc	=	{};
+				// renderTargetViewDesc.Format							=	textureDesc.Format;
+				// renderTargetViewDesc.ViewDimension					=	!isMultiSampled ? D3D11_RTV_DIMENSION_TEXTURE2D : D3D11_RTV_DIMENSION_TEXTURE2DMS;
+				// hResult												=	m_d3d11Device->CreateRenderTargetView(out_resource->m_texture2d, &renderTargetViewDesc, &out_resource->m_renderTargetView);
+				// GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create a render target view for the desired texture2D resource")
+			}
+
+			if (bindFlag & (unsigned int)ResourceBindFlag::DEPTH_STENCIL)
+			{
+				ERROR_AND_DIE("Depth target resource view for cube maps not implemented yet");
+				// D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc	=	{ };
+				// depthStencilViewDesc.Format							=	textureDesc.Format == DXGI_FORMAT_R32_TYPELESS ? DXGI_FORMAT_D32_FLOAT : textureDesc.Format;
+				// depthStencilViewDesc.ViewDimension					=	!isMultiSampled ? D3D11_DSV_DIMENSION_TEXTURE2D : D3D11_DSV_DIMENSION_TEXTURE2DMS;
+				// hResult												=	m_d3d11Device->CreateDepthStencilView(out_resource->m_texture2d, &depthStencilViewDesc, &out_resource->m_depthStencilView);
+				// GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create a depth stencil view for the desired texture2D resource");
+				// if (config.m_canDepthBeReadOnly)
+				// {
+				// 	depthStencilViewDesc.Flags	=	D3D11_DSV_READ_ONLY_DEPTH;
+				// 	hResult				=	m_d3d11Device->CreateDepthStencilView(out_resource->m_texture2d, &depthStencilViewDesc, &out_resource->m_readOnlyDepthStencilView);
+				// 	GUARANTEE_OR_DIE(SUCCEEDED(hResult), "Could not create a read only depth stencil view for the desired texture2D resource")
+				// }
+			}
 			break;
 		}
 
@@ -2636,6 +2860,87 @@ D3D11_Resource* Renderer::CreateTextureResourceFromFile(char const* imageFilePat
 	D3D11_Resource* newTextureResource = nullptr;
 	CreateResourceFromConfig(textureResourceConfig, newTextureResource);
 	return newTextureResource;
+}
+
+
+
+//--------------------------------------------------------------------------------------------------
+// Quick Hack, Ensure the directory name follows the naming convention:
+// The name should end with an underscore followed by an extension, e.g., "skybox_png".
+// Example valid names: "skybox_png", "textures_jpg"
+D3D11_Resource* Renderer::CreateTextureCubeResourceFromFile(char const* cubeMapDir, char const* debugResourceName /*= nullptr*/, unsigned int debugResourceNameSize /*= 0*/)
+{
+	// Fetch extension
+	char const* ext = strchr(cubeMapDir, '_');
+	GUARANTEE_OR_DIE(ext, "Please include the texture extension in the directory name, ex. Skybox_png");
+	++ext; // Skip the underscore
+	std::string extension = std::string(ext, 0, 3);
+
+	std::string cubeMapTextureNamesWithoutExt[6] = { "XPos", "XNeg", "YPos", "YNeg", "ZPos", "ZNeg" };
+	D3D11_SUBRESOURCE_DATA cubeMapInitData[6];
+	IntVec2 textureDim;
+	for (uint8_t textureIndex = 0; textureIndex < 6; ++textureIndex)
+	{
+		// Concatenate directory, texture name and extension
+		std::string currentTextureFilePath		=	cubeMapDir + cubeMapTextureNamesWithoutExt[textureIndex] + "." + extension;
+		
+		// Load texture and populate subresource data
+		Image* currentTexture							=	new Image(currentTextureFilePath.c_str());	// Memory leak
+		cubeMapInitData[textureIndex].pSysMem			=	currentTexture->GetRawData();
+		cubeMapInitData[textureIndex].SysMemPitch		=	currentTexture->GetDimensions().x * 4;		// Pitch, width * bytesPerTexel
+		cubeMapInitData[textureIndex].SysMemSlicePitch	=	0;											// Ignore
+		if (textureDim == IntVec2())
+		{
+			textureDim = currentTexture->GetDimensions();
+		}
+	}
+
+	// Populate texture cube resource config
+	D3D11_ResourceConfig textureResourceConfig			=	{ };
+	textureResourceConfig.m_type						=	ResourceType::TEXTURE2D_CUBEMAP;
+	textureResourceConfig.m_format						=	ResourceViewFormat::DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureResourceConfig.m_width						=	textureDim.x;
+	textureResourceConfig.m_height						=	textureDim.y;
+	textureResourceConfig.m_bindFlags					=	ResourceBindFlag::SHADER_RESOURCE;
+	textureResourceConfig.m_usageFlag					=	ResourceUsage::GPU_READ_GPU_WRITE;
+	textureResourceConfig.m_sizeOfTexelInBytes			=	4;
+	textureResourceConfig.m_debugName					=	debugResourceName;
+	textureResourceConfig.m_debugNameSize				=	debugResourceNameSize;
+	textureResourceConfig.m_numOfSlices					=	6;
+	textureResourceConfig.m_defaultInitializationData	=	cubeMapInitData;
+	
+	// Create resource from config
+	D3D11_Resource* newTextureResource					=	nullptr;
+	CreateResourceFromConfig(textureResourceConfig, newTextureResource);
+
+	// // Populate resource with cube map data
+	// m_d3d11DeviceContext->UpdateSubresource(newTextureResource->m_texture2d, 0, nullptr, cubeMapInitData, textureDim.x * 4, 0);
+
+	return newTextureResource;
+	
+	// 
+	// D3D11_Resource* newTextureResource = nullptr;
+	// CreateResourceFromConfig(textureResourceConfig, newTextureResource);
+	// return newTextureResource;
+
+	// case ResourceType::TEXTURE2D_CUBEMAP:
+	// {
+	// 	IntVec2 const& textureDim = (config.m_width == (unsigned int)-1 || config.m_height == (unsigned int)-1) ? m_config.m_window->GetClientDimensions() : IntVec2(config.m_width, config.m_height);
+	// 
+	// 	D3D11_TEXTURE2D_DESC textureDesc = { };
+	// 	textureDesc.Usage = (D3D11_USAGE)config.m_usageFlag;
+	// 	textureDesc.Format = (DXGI_FORMAT)config.m_format;
+	// 	textureDesc.BindFlags = (unsigned int)config.m_bindFlags;
+	// 	textureDesc.Width = textureDim.x;
+	// 	textureDesc.Height = textureDim.y;
+	// 	textureDesc.MipLevels = config.m_mipLevels;
+	// 	textureDesc.ArraySize = config.m_numOfSlices;
+	// 	textureDesc.SampleDesc.Count = config.m_multiSampleCount;
+	// 	textureDesc.SampleDesc.Quality = config.m_multiSampleQuality;
+	// 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	// 
+	// 
+	// }
 }
 
 
