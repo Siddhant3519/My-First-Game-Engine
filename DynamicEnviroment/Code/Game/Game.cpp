@@ -132,6 +132,8 @@ void Game::KeyboardUpdate()
 	}
 	if (g_theInput->IsKeyDown_WasUp('3'))
 	{
+		Vec3 playerNewPos(-2.f, 0.f, 0.5f);
+		m_player->m_camera.SetPositionOnly(playerNewPos);
 		m_currentGameMode = GAME_MODE_DEBUG_SDF_RAYMARCHER;
 	}
 

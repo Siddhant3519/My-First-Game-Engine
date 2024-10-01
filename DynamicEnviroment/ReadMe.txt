@@ -32,4 +32,5 @@ Three Game Modes:
 * Only 700,000+ instances of grass blades can be rendered using the unoptimized way, will move to compute pipeline for populating buffers for vertexes and wind influence
 * Test-bed raymarched plane has a negative falloff after a certain distance from camera
 * Raymarched terrain mode has a specular sun that can be seen underground, and the sky color doesn't reflect the time of day
+* Quick hack to test various lighting modes by setting the lighting to be relative player/camera orientation in Reflection, foliage, and terrain Playground mode
 
