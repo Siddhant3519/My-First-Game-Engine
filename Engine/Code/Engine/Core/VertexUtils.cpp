@@ -1455,6 +1455,28 @@ void AddVertsForAABB3D(std::vector<Vertex_PCU>& verts, AABB3 const& bounds, Rgba
 
 
 //--------------------------------------------------------------------------------------------------
+void AddVertsForAABB3D(std::vector<Vertex_PCU>& verts, std::vector<unsigned int>& indexes, AABB3 const& bounds, Rgba8 const& color /*= Rgba8::WHITE*/, AABB2 const& UVs /*= AABB2::ZERO_TO_ONE*/)
+{
+	Vec3 ESB = Vec3(bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z);
+	Vec3 ENB = Vec3(bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z);
+	Vec3 ENT = Vec3(bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z);
+	Vec3 EST = Vec3(bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z);
+
+	Vec3 WNB = Vec3(bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z);
+	Vec3 WSB = Vec3(bounds.m_mins.x, bounds.m_mins.y, bounds.m_mins.z);
+	Vec3 WST = Vec3(bounds.m_mins.x, bounds.m_mins.y, bounds.m_maxs.z);
+	Vec3 WNT = Vec3(bounds.m_mins.x, bounds.m_maxs.y, bounds.m_maxs.z);
+
+	AddVertsForQuad3D(verts, indexes, ESB, ENB, ENT, EST, color, UVs); // EAST    FACE  +X
+	AddVertsForQuad3D(verts, indexes, WNB, WSB, WST, WNT, color, UVs); // WEST    FACE  -X
+	AddVertsForQuad3D(verts, indexes, ENB, WNB, WNT, ENT, color, UVs); // NORTH   FACE  +Y
+	AddVertsForQuad3D(verts, indexes, WSB, ESB, EST, WST, color, UVs); // SOUTH   FACE  -Y
+	AddVertsForQuad3D(verts, indexes, WST, EST, ENT, WNT, color, UVs); // TOP     FACE  +Z
+	AddVertsForQuad3D(verts, indexes, WNB, ENB, ESB, WSB, color, UVs); // BOTTOM  FACE  -Z
+}
+
+
+//--------------------------------------------------------------------------------------------------
 void AddVertsForAABB3D(std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, AABB3 const& bounds, Rgba8 const& color /*= Rgba8::WHITE*/, AABB2 const& UVs /*= AABB2::ZERO_TO_ONE*/)
 {
 	Vec3 ESB = Vec3(bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z);
